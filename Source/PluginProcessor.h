@@ -53,11 +53,22 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    void logMessage(const juce::String& m);
+    juce::TextEditor midiLog;
+
+    //==============================================================================
+    juce::MidiKeyboardState keyboardState;
+    juce::MidiMessageCollector midiMessageCollector;
+    juce::AudioProcessorValueTreeState apvts;
+
 private:
     //==============================================================================
+    
     juce::Synthesiser synth;
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-    // TODO: set up APVTS
-
+    
+   
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicSynth2AudioProcessor)
 };

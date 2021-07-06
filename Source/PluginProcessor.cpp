@@ -21,7 +21,7 @@ BasicSynth2AudioProcessor::BasicSynth2AudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), apvts(*this, nullptr, "Parameters", createParameterLayout())
 #endif
 {
     synth.addVoice(new SynthVoice());
@@ -103,7 +103,8 @@ void BasicSynth2AudioProcessor::prepareToPlay (double sampleRate, int samplesPer
         if (auto* voice = dynamic_cast<SynthVoice*>(synth.getVoice(i)))
             voice->prepareToPlay(sampleRate, samplesPerBlock, getNumOutputChannels());
     }
-    
+
+    midiMessageCollector.reset(sampleRate);
 }
 
 void BasicSynth2AudioProcessor::releaseResources()
@@ -149,17 +150,28 @@ void BasicSynth2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
     for (size_t i = 0; i < synth.getNumVoices(); ++i)
     {
-        if (static_cast<juce::SynthesiserVoice*>(synth.getVoice(i)) != nullptr)
+        if (auto* voice = dynamic_cast<SynthVoice*>(synth.getVoice(i)))
         {
-            // TODO: Oscillator controls,
-            // ADSR,
+            // Waveform
+            auto waveform = apvts.getRawParameterValue("Waveform")->load();
+
+            voice->getOscillator().setWaveform(int(waveform));
+
+            // ADSR
+            auto a = apvts.getRawParameterValue("Attack")->load();
+            auto d = apvts.getRawParameterValue("Decay")->load();
+            auto s = apvts.getRawParameterValue("Sustain")->load();
+            auto r = apvts.getRawParameterValue("Release")->load();
+
+            voice->update(a, d, s, r);
+           
             // LFO
         }
     }
 
+    midiMessageCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());
+    keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
-
-    
 }
 
 //==============================================================================
@@ -193,3 +205,31 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new BasicSynth2AudioProcessor();
 }
+
+//==============================================================================
+juce::AudioProcessorValueTreeState::ParameterLayout BasicSynth2AudioProcessor::createParameterLayout()
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout parameterLayout;
+
+    // Waveform Combobox
+    parameterLayout.add(std::make_unique<juce::AudioParameterChoice>("Waveform", 
+        "Waveform", juce::StringArray{ "Sine", "Sawtooth", "Triangle", "Square" }, 0));
+    // ADSR
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Attack",
+        "Attack", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.1f));
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Decay",
+        "Decay", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.1f));
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Sustain",
+        "Sustain", juce::NormalisableRange<float>{0.1f, 1.0f}, 1.0f));
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Release",
+        "Release", juce::NormalisableRange<float>{0.1f, 3.0f}, 0.1f));
+
+    return parameterLayout;
+}
+
+void BasicSynth2AudioProcessor::logMessage(const juce::String& m)
+{
+    midiLog.moveCaretToEnd();
+    midiLog.insertTextAtCaret(m + juce::newLine);
+}
+

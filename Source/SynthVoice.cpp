@@ -3,7 +3,7 @@
 
     SynthVoice.cpp
     Created: 5 Jul 2021 5:30:17pm
-    Author:  sebas
+    Author:  Sebastian Cyliax
 
   ==============================================================================
 */
@@ -21,12 +21,14 @@ void SynthVoice::startNote(int midiNoteNumber,
     int /*currentPitchWheelPosition*/)
 {
     adsr.noteOn();
-    oscillator.setFrequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber));
+    oscillator.setOscillatorFrequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber));
 }
 
 void SynthVoice::stopNote(float /*velocity*/, bool allowTailOff)
 {
     adsr.noteOff();
+    if (!allowTailOff || !adsr.isActive())
+        clearCurrentNote();
 }
 
 void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outputChannels)
@@ -38,8 +40,7 @@ void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outpu
     spec.numChannels = outputChannels;
     spec.sampleRate = sampleRate;
 
-    oscillator.prepare(spec);
-    
+    oscillator.prepareToPlay(spec);
 
     gain.prepare(spec);
     gain.setGainLinear(0.01f);
@@ -53,10 +54,29 @@ void SynthVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer,
 {
     jassert(isPrepared);
 
-    juce::dsp::AudioBlock<float> audioBlock(outputBuffer);
+    if (!isVoiceActive())
+        return;
 
-    oscillator.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
+    synthBuffer.setSize(outputBuffer.getNumChannels(), numSamples, false, false, true);
+    synthBuffer.clear();
+
+    juce::dsp::AudioBlock<float> audioBlock(synthBuffer);
+
+    oscillator.getNextAudioBlock(audioBlock);
     gain.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
 
-    adsr.applyEnvelopeToBuffer(outputBuffer, startSample, numSamples);
+    adsr.applyEnvelopeToBuffer(synthBuffer, 0, synthBuffer.getNumSamples());
+
+    for (auto channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
+    {
+        outputBuffer.addFrom(channel, startSample, synthBuffer, channel, 0, numSamples);
+
+        if (!adsr.isActive())
+            clearCurrentNote();
+    }
+}
+
+void SynthVoice::update(const float a, const float d, const float s, const float r)
+{
+    adsr.updateADSR(a, d, s, r);
 }

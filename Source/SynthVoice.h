@@ -3,7 +3,7 @@
 
     SynthVoice.h
     Created: 5 Jul 2021 5:30:17pm
-    Author:  sebas
+    Author:  Sebastian Cyliax
 
   ==============================================================================
 */
@@ -12,6 +12,8 @@
 
 #include <JuceHeader.h>
 #include "SynthSound.h"
+#include "Data/ADSRData.h"
+#include "Data/OscillatorData.h"
 
 class SynthVoice : public juce::SynthesiserVoice
 {
@@ -34,17 +36,17 @@ public:
     void pitchWheelMoved(int newPitchWheelValue) override {}
     void controllerMoved(int controllerNumber, int newControllerValue) override {}
 
-private:
-    juce::ADSR adsr;
-    juce::ADSR::Parameters adsrParameters;
-    juce::dsp::Oscillator<float> oscillator{ [](float x) { return x / juce::MathConstants<float>::pi; } };
-    juce::dsp::Gain<float> gain;
+    void update(const float a, const float d, const float s, const float r);
 
-    // Waveforms: 
-    //===========
-    // sine: std::sin(x)
-    // saw: x / juce::MathConstants<T>::pi
-    // square: x < 0.0f ? -1.0f : 1.0f
+    OscillatorData& getOscillator() { return oscillator; }
+
+private:
+    juce::AudioBuffer<float> synthBuffer;
+  
+    ADSRData adsr;
+    /*juce::dsp::Oscillator<float> oscillator{ [](float x) { return x / juce::MathConstants<float>::pi; } };*/
+    OscillatorData oscillator;
+    juce::dsp::Gain<float> gain;
 
     bool isPrepared = false;
 };

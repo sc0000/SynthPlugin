@@ -4,6 +4,23 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="yWpFz6" name="BasicSynth2">
+    <GROUP id="{A6058A6B-1341-FCEB-F04B-F8259B161D8D}" name="Data">
+      <FILE id="aF7dYr" name="ADSRData.cpp" compile="1" resource="0" file="Source/Data/ADSRData.cpp"/>
+      <FILE id="C2Ir4M" name="ADSRData.h" compile="0" resource="0" file="Source/Data/ADSRData.h"/>
+      <FILE id="n9Lb9E" name="OscillatorData.cpp" compile="1" resource="0"
+            file="Source/Data/OscillatorData.cpp"/>
+      <FILE id="DcimEk" name="OscillatorData.h" compile="0" resource="0"
+            file="Source/Data/OscillatorData.h"/>
+    </GROUP>
+    <GROUP id="{21BAB4EA-E40A-9CCC-AE72-ED4E49D9FC31}" name="UI">
+      <FILE id="ibNqH9" name="ADSRComponent.cpp" compile="1" resource="0"
+            file="Source/UI/ADSRComponent.cpp"/>
+      <FILE id="WHUZIf" name="ADSRComponent.h" compile="0" resource="0" file="Source/UI/ADSRComponent.h"/>
+      <FILE id="NYcsAR" name="WaveformChoice.cpp" compile="1" resource="0"
+            file="Source/UI/WaveformChoice.cpp"/>
+      <FILE id="naTCES" name="WaveformChoice.h" compile="0" resource="0"
+            file="Source/UI/WaveformChoice.h"/>
+    </GROUP>
     <GROUP id="{7CE343FB-45BB-D322-39EE-03B041BC7C7F}" name="Source">
       <FILE id="PWocfE" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
