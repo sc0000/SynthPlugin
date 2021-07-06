@@ -21,7 +21,7 @@ void SynthVoice::startNote(int midiNoteNumber,
     int /*currentPitchWheelPosition*/)
 {
     adsr.noteOn();
-    oscillator.setOscillatorFrequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber));
+    oscillator.setOscillatorFrequency(midiNoteNumber);
 }
 
 void SynthVoice::stopNote(float /*velocity*/, bool allowTailOff)

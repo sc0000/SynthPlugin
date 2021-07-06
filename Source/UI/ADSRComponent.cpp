@@ -12,8 +12,8 @@
 #include "../PluginProcessor.h"
 
 //==============================================================================
-ADSRComponent::ADSRComponent(juce::AudioProcessorValueTreeState& apvts) :
-    attackSliderAttachment(apvts, "Attack", attackSlider),
+ADSRComponent::ADSRComponent(juce::AudioProcessorValueTreeState& apvts) 
+    : attackSliderAttachment(apvts, "Attack", attackSlider),
     decaySliderAttachment(apvts, "Decay", decaySlider),
     sustainSliderAttachment(apvts, "Sustain", sustainSlider),
     releaseSliderAttachment(apvts, "Release", releaseSlider)

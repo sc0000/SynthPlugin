@@ -24,7 +24,8 @@ BasicSynth2AudioProcessor::BasicSynth2AudioProcessor()
                        ), apvts(*this, nullptr, "Parameters", createParameterLayout())
 #endif
 {
-    synth.addVoice(new SynthVoice());
+    for (int i = 0; i < 16; ++i)
+        synth.addVoice(new SynthVoice());
     synth.addSound(new SynthSound());
 }
 
@@ -165,7 +166,11 @@ void BasicSynth2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
             voice->update(a, d, s, r);
            
-            // LFO
+            // FM
+            auto freq = apvts.getRawParameterValue("FM Frequency")->load();
+            auto depth = apvts.getRawParameterValue("FM Depth")->load();
+
+            voice->getOscillator().setFMParameters(freq, depth);
         }
     }
 
@@ -220,9 +225,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout BasicSynth2AudioProcessor::c
     parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Decay",
         "Decay", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.1f));
     parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Sustain",
-        "Sustain", juce::NormalisableRange<float>{0.1f, 1.0f}, 1.0f));
+        "Sustain", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.8f));
     parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Release",
-        "Release", juce::NormalisableRange<float>{0.1f, 3.0f}, 0.1f));
+        "Release", juce::NormalisableRange<float>{0.1f, 3.0f}, 0.3f));
+    // FM
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("FM Frequency",
+        "FM Frequency", juce::NormalisableRange<float>{0.1f, 1000.0f}, 5.0f));
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("FM Depth",
+        "FM Depth", juce::NormalisableRange<float>{0.1f, 1000.0f}, 500.0f));
 
     return parameterLayout;
 }

@@ -12,26 +12,23 @@
 #include "WaveformChoice.h"
 
 //==============================================================================
-WaveformChoice::WaveformChoice(juce::AudioProcessorValueTreeState& apvts) :
-    waveformChoiceAttachment(apvts, "Waveform", waveformChoice)
+WaveformChoice::WaveformChoice(juce::AudioProcessorValueTreeState& apvts, juce::MidiKeyboardComponent& k) 
+    : waveformChoiceAttachment(apvts, "Waveform", waveformChoice)
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
     addAndMakeVisible(waveformChoice);
     waveformChoice.setText("Set Waveform");
     waveformChoice.addItemList(juce::StringArray{ "Sine", "Sawtooth", "Square", "Triangle" }, 1);
+    waveformChoice.onChange = [&k]() { k.grabKeyboardFocus(); }; // to be instantly able to use the computer keyboard 
+                                                                 // again after switching waveforms
 }
 
 WaveformChoice::~WaveformChoice()
 {
 }
 
-void WaveformChoice::paint (juce::Graphics& g)
+void WaveformChoice::paint(juce::Graphics& g)
 {
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
-
-    //g.setColour (juce::Colours::grey);
-    //g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 }
 
 void WaveformChoice::resized()

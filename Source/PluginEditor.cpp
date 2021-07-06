@@ -13,7 +13,7 @@
 BasicSynth2AudioProcessorEditor::BasicSynth2AudioProcessorEditor(BasicSynth2AudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p),
     keyboardComponent(audioProcessor.keyboardState, juce::MidiKeyboardComponent::horizontalKeyboard),
-    waveformChoice(audioProcessor.apvts),
+    waveformChoice(audioProcessor.apvts, keyboardComponent),
     adsrComponent(audioProcessor.apvts),
     startTime(juce::Time::getMillisecondCounterHiRes() * 0.001)
 {

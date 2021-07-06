@@ -18,7 +18,7 @@
 class WaveformChoice  : public juce::Component
 {
 public:
-    WaveformChoice(juce::AudioProcessorValueTreeState& apvts);
+    WaveformChoice(juce::AudioProcessorValueTreeState& apvts, juce::MidiKeyboardComponent& k);
     ~WaveformChoice() override;
 
     void paint (juce::Graphics&) override;
