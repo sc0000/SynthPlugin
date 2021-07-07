@@ -3,7 +3,7 @@
 
     MidiMessageLogComponent.cpp
     Created: 7 Jul 2021 2:58:00pm
-    Author:  sebas
+    Author:  Sebastian Cyliax
 
   ==============================================================================
 */

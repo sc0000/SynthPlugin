@@ -3,7 +3,7 @@
 
     ADSRData.cpp
     Created: 6 Jul 2021 8:43:10pm
-    Author:  sebas
+    Author:  Sebastian Cyliax
 
   ==============================================================================
 */

@@ -211,12 +211,19 @@ juce::AudioProcessorEditor* BasicSynth2AudioProcessor::createEditor()
 //==============================================================================
 void BasicSynth2AudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-
+    juce::MemoryOutputStream mos(destData, true);
+    apvts.state.writeToStream(mos);
 }
 
 void BasicSynth2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
+    // saves apvts state after closing the program
 
+    auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
+    if (tree.isValid())
+    {
+        apvts.replaceState(tree);
+    }
 }
 
 //==============================================================================
