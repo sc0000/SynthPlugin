@@ -61,5 +61,5 @@ void ADSRComponent::resized()
     attackSlider.setBounds(adsrArea.removeFromTop(getHeight() * 0.25));
     decaySlider.setBounds(adsrArea.removeFromTop(getHeight() * 0.25));
     sustainSlider.setBounds(adsrArea.removeFromTop(getHeight() * 0.25));
-    releaseSlider.setBounds(adsrArea/*.removeFromLeft(140)*/);
+    releaseSlider.setBounds(adsrArea);
 }

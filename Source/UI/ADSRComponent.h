@@ -32,7 +32,6 @@ private:
         {}
     };
 
-    // ADSR sliders
     CustomLinearSlider attackSlider, decaySlider, sustainSlider, releaseSlider;
 
     juce::AudioProcessorValueTreeState::SliderAttachment attackSliderAttachment, decaySliderAttachment,

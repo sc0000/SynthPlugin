@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    This file contains the basic framework code for a JUCE plugin processor.
+    JUCE plugin processor
 
   ==============================================================================
 */
@@ -75,8 +75,5 @@ private:
     juce::Synthesiser synth;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-    
-   
-    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicSynth2AudioProcessor)
 };

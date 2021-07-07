@@ -20,12 +20,13 @@ ChoiceBox::ChoiceBox(juce::AudioProcessorValueTreeState& apvts, const juce::Stri
     if (id == "Waveform")
     {
         choiceBox.addItemList(juce::StringArray{ "Sine", "Sawtooth", "Square", "Triangle" }, 1);
-        choiceBox.onChange = [&k]() { k.grabKeyboardFocus(); }; // to be instantly able to use the computer keyboard 
-    }                                                           // again after switching waveforms
+         
+    }
         
     else if (id == "Filter Type")
         choiceBox.addItemList(juce::StringArray{ "Low Pass", "Bandpass", "Highpass" }, 1);
 
+    choiceBox.onChange = [&k]() { k.grabKeyboardFocus(); };
 }
 
 ChoiceBox::~ChoiceBox()
