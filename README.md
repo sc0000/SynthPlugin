@@ -9,6 +9,6 @@ It can be used with external MIDI input devices, the computer keyboard (middle a
 ## Build & Run
 * Clone this Repo
 * Open `BasicSynth2.jucer` with the projucer, select the appropriate exporter (use the `+` sign in the bottom left corner to add a new one if necessary)
-* Press the exporter's symbol next to the selector to create a solution for the chosen exporter
+* Press the exporter's symbol next to the selector to create a solution for the chosen IDE
 * Build that solution
 * Run the standalone build or add the VST3 build to your VST3 folder to use it in your DAW
