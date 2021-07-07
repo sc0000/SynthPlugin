@@ -12,11 +12,11 @@
 #include "../PluginProcessor.h"
 
 //==============================================================================
-ADSRComponent::ADSRComponent(juce::AudioProcessorValueTreeState& apvts) 
-    : attackSliderAttachment(apvts, "Attack", attackSlider),
-    decaySliderAttachment(apvts, "Decay", decaySlider),
-    sustainSliderAttachment(apvts, "Sustain", sustainSlider),
-    releaseSliderAttachment(apvts, "Release", releaseSlider)
+ADSRComponent::ADSRComponent(juce::AudioProcessorValueTreeState& apvts, const juce::StringArray& id)
+    : attackSliderAttachment(apvts, id[0], attackSlider),
+    decaySliderAttachment(apvts, id[1], decaySlider),
+    sustainSliderAttachment(apvts, id[2], sustainSlider),
+    releaseSliderAttachment(apvts, id[3], releaseSlider)
 {
     addAndMakeVisible(attackSlider);
     addAndMakeVisible(decaySlider);
@@ -24,16 +24,16 @@ ADSRComponent::ADSRComponent(juce::AudioProcessorValueTreeState& apvts)
     addAndMakeVisible(releaseSlider);
 
     attackLabel.attachToComponent(&attackSlider, true);
-    attackLabel.setText("Attack", juce::dontSendNotification);
+    attackLabel.setText(id[0], juce::dontSendNotification);
 
     decayLabel.attachToComponent(&decaySlider, true);
-    decayLabel.setText("Decay", juce::dontSendNotification);
+    decayLabel.setText(id[1], juce::dontSendNotification);
 
     sustainLabel.attachToComponent(&sustainSlider, true);
-    sustainLabel.setText("Sustain", juce::dontSendNotification);
+    sustainLabel.setText(id[2], juce::dontSendNotification);
 
     releaseLabel.attachToComponent(&releaseSlider, true);
-    releaseLabel.setText("Release", juce::dontSendNotification);
+    releaseLabel.setText(id[3], juce::dontSendNotification);
 }
 
 ADSRComponent::~ADSRComponent()

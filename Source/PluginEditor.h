@@ -11,7 +11,9 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "UI/ADSRComponent.h"
-#include "UI/WaveformChoice.h"
+#include "UI/ChoiceBox.h"
+#include "UI/GainComponent.h"
+#include "UI/FMandFilterComponent.h"
 
 //==============================================================================
 /**
@@ -34,15 +36,20 @@ private:
 
     juce::MidiKeyboardComponent keyboardComponent;
 
-    // Waveform choice combobox
-    WaveformChoice waveformChoice;
-
+    ChoiceBox waveformChoice;
+    ChoiceBox filterChoice;
+    GainComponent gainComponent;
     ADSRComponent adsrComponent;
+    ADSRComponent filterAdsrComponent;
+    FMandFilterComponent fmComponent;
+    FMandFilterComponent filterComponent;
+
     juce::TextEditor midiMessageLog;
     
     std::vector<juce::Component*> getComponents() 
     { 
-        return { &keyboardComponent, &waveformChoice, &adsrComponent, &midiMessageLog }; 
+        return { &keyboardComponent, &waveformChoice, &filterChoice, &gainComponent, 
+            &adsrComponent, &filterAdsrComponent, &fmComponent, &filterComponent, &midiMessageLog }; 
     }
 
 

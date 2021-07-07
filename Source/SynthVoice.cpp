@@ -20,8 +20,9 @@ void SynthVoice::startNote(int midiNoteNumber,
     juce::SynthesiserSound* sound,
     int /*currentPitchWheelPosition*/)
 {
-    adsr.noteOn();
     oscillator.setOscillatorFrequency(midiNoteNumber);
+    adsr.noteOn();
+    filterAdsr.noteOn();
 }
 
 void SynthVoice::stopNote(float /*velocity*/, bool allowTailOff)
@@ -29,11 +30,14 @@ void SynthVoice::stopNote(float /*velocity*/, bool allowTailOff)
     adsr.noteOff();
     if (!allowTailOff || !adsr.isActive())
         clearCurrentNote();
+
+    filterAdsr.noteOff();
 }
 
 void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outputChannels)
 {
     adsr.setSampleRate(sampleRate);
+    filterAdsr.setSampleRate(sampleRate);
 
     juce::dsp::ProcessSpec spec;
     spec.maximumBlockSize = samplesPerBlock;
@@ -44,6 +48,8 @@ void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outpu
 
     gain.prepare(spec);
     gain.setGainLinear(0.01f);
+
+    filter.prepareToPlay(sampleRate, samplesPerBlock, outputChannels);
 
     isPrepared = true;
 }
@@ -58,11 +64,15 @@ void SynthVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer,
         return;
 
     synthBuffer.setSize(outputBuffer.getNumChannels(), numSamples, false, false, true);
+
+    filterAdsr.applyEnvelopeToBuffer(synthBuffer, 0, synthBuffer.getNumSamples()); // doesn't do what it says, just activates the filter ADSR ;)
+
     synthBuffer.clear();
 
     juce::dsp::AudioBlock<float> audioBlock(synthBuffer);
 
     oscillator.getNextAudioBlock(audioBlock);
+    filter.process(synthBuffer);
     gain.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
 
     adsr.applyEnvelopeToBuffer(synthBuffer, 0, synthBuffer.getNumSamples());
@@ -74,9 +84,17 @@ void SynthVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer,
         if (!adsr.isActive())
             clearCurrentNote();
     }
+
+    filterAdsr.getNextSample();
 }
 
-void SynthVoice::update(const float a, const float d, const float s, const float r)
+void SynthVoice::updateADSR(ADSRData& instance, const float a, const float d, const float s, const float r)
 {
-    adsr.updateADSR(a, d, s, r);
+    instance.updateADSR(a, d, s, r);
+}
+
+void SynthVoice::updateFilter(const int filterType, const float cutoffFrequency, const float resonance)
+{
+    auto modulator = filterAdsr.getNextSample();
+    filter.updateParameters(filterType, cutoffFrequency, resonance, modulator);
 }

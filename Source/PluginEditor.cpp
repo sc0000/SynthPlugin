@@ -13,8 +13,13 @@
 BasicSynth2AudioProcessorEditor::BasicSynth2AudioProcessorEditor(BasicSynth2AudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p),
     keyboardComponent(audioProcessor.keyboardState, juce::MidiKeyboardComponent::horizontalKeyboard),
-    waveformChoice(audioProcessor.apvts, keyboardComponent),
-    adsrComponent(audioProcessor.apvts),
+    waveformChoice(audioProcessor.apvts, audioProcessor.choiceIdentifiers[0], keyboardComponent),
+    filterChoice(audioProcessor.apvts, audioProcessor.choiceIdentifiers[1], keyboardComponent),
+    gainComponent(audioProcessor.apvts),
+    adsrComponent(audioProcessor.apvts, audioProcessor.adsrIdentifiers),
+    filterAdsrComponent(audioProcessor.apvts, audioProcessor.filterAdsrIdentifiers),
+    fmComponent(audioProcessor.apvts, audioProcessor.fmIdentifiers),
+    filterComponent(audioProcessor.apvts, audioProcessor.filterIdentifiers),
     startTime(juce::Time::getMillisecondCounterHiRes() * 0.001)
 {
     for (auto* component : getComponents())
@@ -31,8 +36,8 @@ BasicSynth2AudioProcessorEditor::BasicSynth2AudioProcessorEditor(BasicSynth2Audi
     midiMessageLog.setCaretVisible(true);
     midiMessageLog.setPopupMenuEnabled(true);
     midiMessageLog.setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
-    midiMessageLog.setColour(juce::TextEditor::outlineColourId, juce::Colours::white);
-    midiMessageLog.setColour(juce::TextEditor::shadowColourId, juce::Colours::grey);
+    midiMessageLog.setColour(juce::TextEditor::outlineColourId, juce::Colours::grey);
+    // midiMessageLog.setColour(juce::TextEditor::shadowColourId, juce::Colours::grey);
 
     audioProcessor.keyboardState.addListener(this);
 
@@ -42,7 +47,7 @@ BasicSynth2AudioProcessorEditor::BasicSynth2AudioProcessorEditor(BasicSynth2Audi
         deviceManager.addMidiInputDeviceCallback(device.identifier, this);
     }
     
-    setSize (500, 400);
+    setSize (1200, 400);
     startTimer(400); // to get computer keyboard focus
 }
 
@@ -57,21 +62,34 @@ void BasicSynth2AudioProcessorEditor::paint (juce::Graphics& g)
 
 void BasicSynth2AudioProcessorEditor::resized()
 {
-    auto area = getLocalBounds();
-    keyboardComponent.setBounds(area.removeFromTop(area.getHeight() * 0.33));
-    waveformChoice.setBounds(area.removeFromLeft(area.getWidth() * 0.33).removeFromTop(area.getHeight() / 12));
-    adsrComponent.setBounds(area.removeFromTop(area.getHeight() * 0.75));
-    midiMessageLog.setBounds(area);
-}
+    auto bounds = getLocalBounds();
+    keyboardComponent.setBounds(bounds.removeFromTop(bounds.getHeight() / 3));
 
-//==============================================================================
-// MIDI logging
+    auto leftSideBounds = bounds.removeFromLeft(bounds.getWidth() * 0.2);
+    waveformChoice.setBounds(leftSideBounds.removeFromTop(18));
+    gainComponent.setBounds(leftSideBounds.removeFromTop(leftSideBounds.getHeight() / 3));
+    fmComponent.setBounds(leftSideBounds);
+
+    auto rightSideBounds = bounds;
+    auto rightControlBounds = rightSideBounds.removeFromTop(rightSideBounds.getHeight() * 0.8);
+    adsrComponent.setBounds(rightControlBounds.removeFromLeft(rightControlBounds.getWidth() / 2.5));
+
+    auto filterBounds = rightControlBounds.removeFromLeft(rightControlBounds.getWidth() / 3);
+    filterChoice.setBounds(filterBounds.removeFromTop(18));
+    filterComponent.setBounds(filterBounds);
+    filterAdsrComponent.setBounds(rightControlBounds);
+
+    midiMessageLog.setBounds(rightSideBounds);
+}
 
 void BasicSynth2AudioProcessorEditor::timerCallback()
 {
     keyboardComponent.grabKeyboardFocus();
     stopTimer();
 }
+
+//==============================================================================
+// MIDI logging
 
 void BasicSynth2AudioProcessorEditor::handleNoteOn(juce::MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
 {

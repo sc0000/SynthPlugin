@@ -18,22 +18,22 @@
 class ADSRComponent  : public juce::Component
 {
 public:
-    ADSRComponent(juce::AudioProcessorValueTreeState& apvts);
+    ADSRComponent(juce::AudioProcessorValueTreeState& apvts, const juce::StringArray& id);
     ~ADSRComponent() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;
 
 private:
-    struct CustomRotarySlider : public juce::Slider
+    struct CustomLinearSlider : public juce::Slider
     {
-        CustomRotarySlider() : juce::Slider(juce::Slider::SliderStyle::LinearHorizontal,
+        CustomLinearSlider() : juce::Slider(juce::Slider::SliderStyle::LinearHorizontal,
             juce::Slider::TextEntryBoxPosition::NoTextBox)
         {}
     };
 
     // ADSR sliders
-    CustomRotarySlider attackSlider, decaySlider, sustainSlider, releaseSlider;
+    CustomLinearSlider attackSlider, decaySlider, sustainSlider, releaseSlider;
 
     juce::AudioProcessorValueTreeState::SliderAttachment attackSliderAttachment, decaySliderAttachment,
         sustainSliderAttachment, releaseSliderAttachment;

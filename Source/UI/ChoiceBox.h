@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    WaveformChoice.h
+    ChoiceBox.h
     Created: 6 Jul 2021 10:09:28pm
     Author:  Sebastian Cyliax
 
@@ -15,18 +15,18 @@
 //==============================================================================
 /*
 */
-class WaveformChoice  : public juce::Component
+class ChoiceBox  : public juce::Component
 {
 public:
-    WaveformChoice(juce::AudioProcessorValueTreeState& apvts, juce::MidiKeyboardComponent& k);
-    ~WaveformChoice() override;
+    ChoiceBox(juce::AudioProcessorValueTreeState& apvts, const juce::String& id, juce::MidiKeyboardComponent& k);
+    ~ChoiceBox() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;
 
 private:
-    juce::ComboBox waveformChoice;
-    juce::AudioProcessorValueTreeState::ComboBoxAttachment waveformChoiceAttachment;
+    juce::ComboBox choiceBox;
+    juce::AudioProcessorValueTreeState::ComboBoxAttachment choiceBoxAttachment;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveformChoice)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChoiceBox)
 };

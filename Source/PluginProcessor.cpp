@@ -110,8 +110,6 @@ void BasicSynth2AudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 
 void BasicSynth2AudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -121,8 +119,7 @@ bool BasicSynth2AudioProcessor::isBusesLayoutSupported (const BusesLayout& layou
     juce::ignoreUnused (layouts);
     return true;
   #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
+    // This checks if the layout is supported.
     // Some plugin hosts, such as certain GarageBand versions, will only
     // load plugins that support stereo bus layouts.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
@@ -158,19 +155,40 @@ void BasicSynth2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
             voice->getOscillator().setWaveform(int(waveform));
 
+            // Gain
+            auto g = apvts.getRawParameterValue("Gain")->load();
+
+            voice->getGain().setGainLinear(g);
+
             // ADSR
             auto a = apvts.getRawParameterValue("Attack")->load();
             auto d = apvts.getRawParameterValue("Decay")->load();
             auto s = apvts.getRawParameterValue("Sustain")->load();
             auto r = apvts.getRawParameterValue("Release")->load();
 
-            voice->update(a, d, s, r);
+            voice->updateADSR(voice->getADSR(), a, d, s, r);
            
             // FM
-            auto freq = apvts.getRawParameterValue("FM Frequency")->load();
+            auto freq = apvts.getRawParameterValue("FM Freq")->load();
             auto depth = apvts.getRawParameterValue("FM Depth")->load();
 
             voice->getOscillator().setFMParameters(freq, depth);
+
+            // Filter
+            int filterType = apvts.getRawParameterValue("Filter Type")->load();
+            auto cutoff = apvts.getRawParameterValue("Filter Cutoff")->load();
+            auto resonance = apvts.getRawParameterValue("Filter Resonance")->load();
+
+            voice->updateFilter(filterType, cutoff, resonance);
+
+            // Filter ADSR
+            auto fa = apvts.getRawParameterValue("Filter Attack")->load();
+            auto fd = apvts.getRawParameterValue("Filter Decay")->load();
+            auto fs = apvts.getRawParameterValue("Filter Sustain")->load();
+            auto fr = apvts.getRawParameterValue("Filter Release")->load();
+
+            voice->updateADSR(voice->getFilterADSR(), fa, fd, fs, fr);
+
         }
     }
 
@@ -182,7 +200,7 @@ void BasicSynth2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 //==============================================================================
 bool BasicSynth2AudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+    return true;
 }
 
 juce::AudioProcessorEditor* BasicSynth2AudioProcessor::createEditor()
@@ -219,20 +237,39 @@ juce::AudioProcessorValueTreeState::ParameterLayout BasicSynth2AudioProcessor::c
     // Waveform Combobox
     parameterLayout.add(std::make_unique<juce::AudioParameterChoice>("Waveform", 
         "Waveform", juce::StringArray{ "Sine", "Sawtooth", "Triangle", "Square" }, 0));
+    // Gain
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Gain",
+        "Gain", juce::NormalisableRange<float>{0.0f, 1.0f}, 0.1f));
     // ADSR
     parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Attack",
-        "Attack", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.1f));
+        "Attack", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.3f));
     parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Decay",
-        "Decay", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.1f));
+        "Decay", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.9f));
     parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Sustain",
         "Sustain", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.8f));
     parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Release",
-        "Release", juce::NormalisableRange<float>{0.1f, 3.0f}, 0.3f));
+        "Release", juce::NormalisableRange<float>{0.1f, 3.0f}, 0.5f));
     // FM
-    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("FM Frequency",
-        "FM Frequency", juce::NormalisableRange<float>{0.1f, 1000.0f}, 5.0f));
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("FM Freq",
+        "FM Freq", juce::NormalisableRange<float>{0.1f, 1000.0f}, 0.1f));
     parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("FM Depth",
-        "FM Depth", juce::NormalisableRange<float>{0.1f, 1000.0f}, 500.0f));
+        "FM Depth", juce::NormalisableRange<float>{0.1f, 1000.0f}, 0.1f));
+    //Filter
+    parameterLayout.add(std::make_unique<juce::AudioParameterChoice>("Filter Type",
+        "Filter Type", juce::StringArray{ "Low Pass", "Band Pass", "High Pass" }, 0));
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Filter Cutoff",
+        "Filter Cutoff", juce::NormalisableRange<float>{20.0f, 20000.0f, 1.0f, 0.6f}, 440.0f));
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Filter Resonance",
+        "Filter Resonance", juce::NormalisableRange<float>{0.1f, 10.0f, 0.1}, 5.0f));
+    // Filter ADSR
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Filter Attack",
+        "Filter Attack", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.3f));
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Filter Decay",
+        "Filter Decay", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.9f));
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Filter Sustain",
+        "Filter Sustain", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.8f));
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Filter Release",
+        "Filter Release", juce::NormalisableRange<float>{0.1f, 3.0f}, 0.5f));
 
     return parameterLayout;
 }

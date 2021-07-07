@@ -14,6 +14,7 @@
 #include "SynthSound.h"
 #include "Data/ADSRData.h"
 #include "Data/OscillatorData.h"
+#include "Data/FilterData.h"
 
 class SynthVoice : public juce::SynthesiserVoice
 {
@@ -32,21 +33,25 @@ public:
     void renderNextBlock(juce::AudioSampleBuffer& outputBuffer,
         int startSample,
         int numSamples) override;
-
+   
     void pitchWheelMoved(int newPitchWheelValue) override {}
     void controllerMoved(int controllerNumber, int newControllerValue) override {}
 
-    void update(const float a, const float d, const float s, const float r);
-
+    void updateADSR(ADSRData& instance, const float a, const float d, const float s, const float r);
+    void updateFilter(const int filterType, const float cutoffFrequency, const float resonance);
+    
     OscillatorData& getOscillator() { return oscillator; }
-
+    juce::dsp::Gain<float>& getGain() { return gain; }
+    ADSRData& getADSR() { return adsr; }
+    ADSRData& getFilterADSR() { return filterAdsr; }
+    
 private:
     juce::AudioBuffer<float> synthBuffer;
-  
-    ADSRData adsr;
-    /*juce::dsp::Oscillator<float> oscillator{ [](float x) { return x / juce::MathConstants<float>::pi; } };*/
     OscillatorData oscillator;
     juce::dsp::Gain<float> gain;
+    ADSRData adsr;
+    ADSRData filterAdsr;
+    FilterData filter;
 
     bool isPrepared = false;
 };
