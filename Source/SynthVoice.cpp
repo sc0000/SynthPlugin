@@ -84,8 +84,6 @@ void SynthVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer,
         if (!adsr.isActive())
             clearCurrentNote();
     }
-
-    filterAdsr.getNextSample();
 }
 
 void SynthVoice::updateADSR(ADSRData& instance, const float a, const float d, const float s, const float r)
