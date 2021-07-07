@@ -15,6 +15,10 @@
             file="Source/Data/OscillatorData.h"/>
     </GROUP>
     <GROUP id="{21BAB4EA-E40A-9CCC-AE72-ED4E49D9FC31}" name="UI">
+      <FILE id="Mfolsl" name="MidiMessageLogComponent.cpp" compile="1" resource="0"
+            file="Source/UI/MidiMessageLogComponent.cpp"/>
+      <FILE id="YgpT4D" name="MidiMessageLogComponent.h" compile="0" resource="0"
+            file="Source/UI/MidiMessageLogComponent.h"/>
       <FILE id="ibNqH9" name="ADSRComponent.cpp" compile="1" resource="0"
             file="Source/UI/ADSRComponent.cpp"/>
       <FILE id="WHUZIf" name="ADSRComponent.h" compile="0" resource="0" file="Source/UI/ADSRComponent.h"/>

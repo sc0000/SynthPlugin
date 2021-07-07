@@ -65,7 +65,7 @@ public:
     const juce::StringArray adsrIdentifiers { "Attack", "Decay", "Sustain", "Release" };
     const juce::StringArray filterAdsrIdentifiers { "Filter Attack", "Filter Decay", "Filter Sustain", "Filter Release" };
     const juce::StringArray fmIdentifiers {"FM Freq", "FM Depth"};
-    const juce::StringArray filterIdentifiers { "Filter Cutoff", "Filter Resonance" };
+    const juce::StringArray filterIdentifiers { "Filter Cutoff", "Filter Reso" };
     const juce::StringArray choiceIdentifiers {"Waveform", "Filter Type"};
     // juce::Array<juce::StringArray> identifiers{adsrIdentifiers, filterAdsrIdentifiers, fmIdentifiers, filterIdentifiers};
 

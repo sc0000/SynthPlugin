@@ -177,7 +177,7 @@ void BasicSynth2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
             // Filter
             int filterType = apvts.getRawParameterValue("Filter Type")->load();
             auto cutoff = apvts.getRawParameterValue("Filter Cutoff")->load();
-            auto resonance = apvts.getRawParameterValue("Filter Resonance")->load();
+            auto resonance = apvts.getRawParameterValue("Filter Reso")->load();
 
             voice->updateFilter(filterType, cutoff, resonance);
 
@@ -211,15 +211,12 @@ juce::AudioProcessorEditor* BasicSynth2AudioProcessor::createEditor()
 //==============================================================================
 void BasicSynth2AudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+
 }
 
 void BasicSynth2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+
 }
 
 //==============================================================================
@@ -259,8 +256,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout BasicSynth2AudioProcessor::c
         "Filter Type", juce::StringArray{ "Low Pass", "Band Pass", "High Pass" }, 0));
     parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Filter Cutoff",
         "Filter Cutoff", juce::NormalisableRange<float>{20.0f, 20000.0f, 1.0f, 0.6f}, 440.0f));
-    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Filter Resonance",
-        "Filter Resonance", juce::NormalisableRange<float>{0.1f, 10.0f, 0.1}, 5.0f));
+    parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Filter Reso",
+        "Filter Reso", juce::NormalisableRange<float>{0.1f, 10.0f, 0.1}, 5.0f));
     // Filter ADSR
     parameterLayout.add(std::make_unique<juce::AudioParameterFloat>("Filter Attack",
         "Filter Attack", juce::NormalisableRange<float>{0.1f, 1.0f}, 0.3f));
