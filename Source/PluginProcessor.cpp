@@ -158,7 +158,7 @@ void BasicSynth2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
             // Gain
             auto g = apvts.getRawParameterValue("Gain")->load();
 
-            voice->getGain().setGainLinear(g);
+            voice->getOscillator().getGain().setGainLinear(g);
 
             // ADSR
             auto a = apvts.getRawParameterValue("Attack")->load();

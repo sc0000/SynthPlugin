@@ -16,27 +16,34 @@ void OscillatorData::setWaveform(const int choice)
     {
     case 0:
         // Sine Wave
-        initialise([](float x) { return std::sin(x); });
+        processorChain.get<oscillator1Index>().initialise([](float x) { return std::sin(x); });
+        processorChain.get<oscillator2Index>().initialise([](float x) { return std::sin(x); });
         break;
     case 1:
         // Sawtooth Wave
-        initialise([](float x) { return x / juce::MathConstants<float>::pi; });
+        processorChain.get<oscillator1Index>().initialise([](float x) { return x / juce::MathConstants<float>::pi; });
+        processorChain.get<oscillator2Index>().initialise([](float x) { return x / juce::MathConstants<float>::pi; });
         break;
     case 2:
         // Square Wave
-        initialise([](float x) { return x < 0.0f ? -1.0f : 1.0f; });
+        processorChain.get<oscillator1Index>().initialise([](float x) { return x < 0.0f ? -1.0f : 1.0f; });
+        processorChain.get<oscillator2Index>().initialise([](float x) { return x < 0.0f ? -1.0f : 1.0f; });
         break;
     case 3:
         // Triangle Wave
-        initialise([](float x) { return 1.0 - std::abs(std::fmod(x, 2.0) - 1.0); });
+        processorChain.get<oscillator1Index>().initialise([](float x) { return 1.0 - std::abs(std::fmod(x, 2.0) - 1.0); });
+        processorChain.get<oscillator2Index>().initialise([](float x) { return 1.0 - std::abs(std::fmod(x, 2.0) - 1.0); });
         break;
     }
 }
 
 void OscillatorData::prepareToPlay(juce::dsp::ProcessSpec& spec) 
 { 
-    prepare(spec);
+    processorChain.prepare(spec);
     fmOscillator.prepare(spec);
+    
+    processorChain.get<masterGainIndex>().setGainLinear(0.01f);
+
 }
 
 void OscillatorData::getNextAudioBlock(juce::dsp::AudioBlock<float>& audioBlock) 
@@ -49,18 +56,20 @@ void OscillatorData::getNextAudioBlock(juce::dsp::AudioBlock<float>& audioBlock)
         }
     }
     
-    process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
+    processorChain.process(juce::dsp::ProcessContextReplacing<float>(audioBlock));
 }
 
 void OscillatorData::setOscillatorFrequency(const int& mNN)
 { 
     midiNoteNumber = mNN;
-    setFrequency(std::abs(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) + fmMod));
+    processorChain.get<oscillator1Index>().setFrequency(std::abs(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) + fmMod));
+    processorChain.get<oscillator2Index>().setFrequency(std::abs(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) * 1.02f + fmMod));
 }
 
 void OscillatorData::setFMParameters(const float freq, const float depth)
 {
     fmOscillator.setFrequency(freq);
     fmDepth = depth;
-    setFrequency(std::abs(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) + fmMod));
+    processorChain.get<oscillator1Index>().setFrequency(std::abs(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) + fmMod));
+    processorChain.get<oscillator2Index>().setFrequency(std::abs(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) * 1.02f + fmMod));
 }

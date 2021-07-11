@@ -41,14 +41,14 @@ public:
     void updateFilter(const int filterType, const float cutoffFrequency, const float resonance);
     
     OscillatorData& getOscillator() { return oscillator; }
-    juce::dsp::Gain<float>& getGain() { return gain; }
+    // juce::dsp::Gain<float>& getGain() { return gain; }
     ADSRData& getADSR() { return adsr; }
     ADSRData& getFilterADSR() { return filterAdsr; }
     
 private:
     juce::AudioBuffer<float> synthBuffer;
     OscillatorData oscillator;
-    juce::dsp::Gain<float> gain;
+    // juce::dsp::Gain<float> gain;
     ADSRData adsr;
     ADSRData filterAdsr;
     FilterData filter;
