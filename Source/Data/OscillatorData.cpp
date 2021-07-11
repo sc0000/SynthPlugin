@@ -21,8 +21,22 @@ void OscillatorData::setWaveform(const int choice)
         break;
     case 1:
         // Sawtooth Wave
-        processorChain.get<oscillator1Index>().initialise([](float x) { return x / juce::MathConstants<float>::pi; });
-        processorChain.get<oscillator2Index>().initialise([](float x) { return x / juce::MathConstants<float>::pi; });
+        processorChain.get<oscillator1Index>().initialise([](float x) 
+            {
+            return juce::jmap(x,
+                -juce::MathConstants<float>::pi,
+                juce::MathConstants<float>::pi,
+                -1.0f,
+                1.0f);
+            }, 2);
+        processorChain.get<oscillator2Index>().initialise([](float x)
+            {
+                return juce::jmap(x,
+                    -juce::MathConstants<float>::pi,
+                    juce::MathConstants<float>::pi,
+                    -1.0f,
+                    1.0f);
+            }, 2);
         break;
     case 2:
         // Square Wave
@@ -63,7 +77,7 @@ void OscillatorData::setOscillatorFrequency(const int& mNN)
 { 
     midiNoteNumber = mNN;
     processorChain.get<oscillator1Index>().setFrequency(std::abs(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) + fmMod));
-    processorChain.get<oscillator2Index>().setFrequency(std::abs(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) * 1.02f + fmMod));
+    processorChain.get<oscillator2Index>().setFrequency(std::abs(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) * 1.005f + fmMod));
 }
 
 void OscillatorData::setFMParameters(const float freq, const float depth)
@@ -71,5 +85,5 @@ void OscillatorData::setFMParameters(const float freq, const float depth)
     fmOscillator.setFrequency(freq);
     fmDepth = depth;
     processorChain.get<oscillator1Index>().setFrequency(std::abs(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) + fmMod));
-    processorChain.get<oscillator2Index>().setFrequency(std::abs(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) * 1.02f + fmMod));
+    processorChain.get<oscillator2Index>().setFrequency(std::abs(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber) * 1.005f + fmMod));
 }
