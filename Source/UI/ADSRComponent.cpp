@@ -18,10 +18,8 @@ ADSRComponent::ADSRComponent(juce::AudioProcessorValueTreeState& apvts, const ju
     sustainSliderAttachment(apvts, id[2], sustainSlider),
     releaseSliderAttachment(apvts, id[3], releaseSlider)
 {
-    addAndMakeVisible(attackSlider);
-    addAndMakeVisible(decaySlider);
-    addAndMakeVisible(sustainSlider);
-    addAndMakeVisible(releaseSlider);
+    for (auto* slider : getSliders())
+        addAndMakeVisible(slider);
 
     attackLabel.attachToComponent(&attackSlider, true);
     attackLabel.setText(id[0], juce::dontSendNotification);

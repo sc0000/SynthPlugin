@@ -33,10 +33,12 @@ private:
     };
 
     CustomLinearSlider attackSlider, decaySlider, sustainSlider, releaseSlider;
+    std::vector<CustomLinearSlider*> getSliders() { return { &attackSlider, &decaySlider, &sustainSlider, &releaseSlider }; }
 
     juce::AudioProcessorValueTreeState::SliderAttachment attackSliderAttachment, decaySliderAttachment,
         sustainSliderAttachment, releaseSliderAttachment;
 
     juce::Label attackLabel, decayLabel, sustainLabel, releaseLabel;
+  
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ADSRComponent)
 };
