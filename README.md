@@ -2,21 +2,36 @@
 A JUCE Synth Plugin; will be outfitted with new features as I learn them.
 It can be used with external MIDI input devices, the computer keyboard (middle and upper letter row) and mouse.
 
-## Installing dependencies, building & running
+## Installing dependencies, building & running on Windows and macOS
 * Clone this Repo
 * [Clone the JUCE Repo](https://github.com/juce-framework/JUCE)
-* Build the Projucer (JUCE' project management tool): Use the appropriate build file in `JUCE/extras/Projucer/Builds/...`
-* Run the Projucer; within it, open the `BasicSynth2.jucer` file in this Repo (`File -> Open...`)
+* Build the Projucer (JUCE' project management tool): Use the appropriate solution in `JUCE/extras/Projucer/Builds/...`
+* Run the Projucer; within it, open the `BasicSynth2.jucer` file in this Repo (File -> Open...)
 * Select the appropriate exporter (use the `+` sign in the bottom left corner to add a new one if necessary)
 * Press the exporter's symbol next to the selector (at the top of the window) to create a solution for the chosen IDE
 * Build that solution
 * Run the standalone build or add the VST3 build to your VST3 folder to use it in your DAW
 
+## Installing dependencies, building & running on Linux
+* Clone this Repo
+* [Clone the JUCE Repo](https://github.com/juce-framework/JUCE)
+* Build the Projucer (JUCE' project management tool): Use the makefile in `JUCE/extras/Projucer/Builds/LinuxMakefile`
+* Install dependencies:
+  * run `sudo apt-get install -y g++ libgtk-3-dev libfreetype6-dev libx11-dev libxinerama-dev libxrandr-dev libxcursor-dev mesa-common-dev libasound2-dev freeglut3-dev libxcomposite-dev libcurl4-openssl-dev`
+
+  * and `sudo add-apt-repository -y ppa:webkit-team/ppa && sudo apt-get install libwebkit2gtk-4.0-37 libwebkit2gtk-4.0-dev`
+* Run the Projucer; the executable is in `/JUCE/extras/Projucer/Builds/LinuxMakefile/build`
+* within it, open the `BasicSynth2.jucer` file in this Repo (File -> Open...)
+* Select Linux Makefile as the exporter (use the `+` sign in the bottom left corner)
+* Save the project (`File -> Save Project`) to create a makefile
+* Use the makefile in `/SynthPlugin/Builds/LinuxMakefile` to build the project
+* Run; the executable is `BasicSynth2` in `/SynthPlugin/Builds/LinuxMakefile/build/`
+
 ## Code Structure
 The two classes given by the framework, PluginProcessor and PluginEditor, deal with Audio Processing and UI respectively. 
 
-PluginProcessor has a juce::Synthesiser member that holds 16 instances of SynthVoice, each of which producing audio via its own oscillator (w/ switchable waveforms) and processing its manipulations via Frequency Modulation and a Filter section. The synthesiser also requires an instance of SynthSound to work properly.
-Plugin Processor also holds an instance of juce::AudioProcessorValueTreeState which works as an interface between the UI and the Audio Processing. The functions updating the different parameters are organized in classes in the Data folder, except for Gain, which is directly accessed via SynthVoice.
+PluginProcessor has a juce::Synthesiser member that holds 16 instances of SynthVoice, each of which producing audio via its own 2 oscillators (w/ switchable waveforms) and processing its manipulations via Frequency Modulation and a Filter section. The synthesiser also requires an instance of SynthSound to work properly.
+Plugin Processor also holds an instance of juce::AudioProcessorValueTreeState which works as an interface between the UI and the Audio Processing. The functions updating the different parameters are organized in classes in the Data folder.
 
 PluginEditor holds instances of all the UI elements, which, with the exception of the on-screen-keyboard, which requires very little setup compared to the others, are organized in classes in the UI folder.
 
